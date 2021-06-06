@@ -1,7 +1,6 @@
-// Import Dependencies
+// Import Dependencies
 import React, { useContext } from 'react';
 import {
-  Button,
   FlatList,
   StyleSheet,
   Text,
@@ -11,26 +10,29 @@ import {
 import { Context } from '../context/BlogContext';
 import { Feather } from '@expo/vector-icons';
 
-// Create component
-const IndexScreen = () => {
-  const { state, addBlogPost, deleteBlogPost } = useContext(Context);
+// Create component
+const IndexScreen = ({ navigation }) => {
+  const { state, deleteBlogPost } = useContext(Context);
 
   return (
     <View>
-      <Button title={'Add Post'} onPress={addBlogPost} />
       <FlatList
         data={state}
         keyExtractor={(blogPost) => blogPost.title}
         renderItem={({ item }) => {
           return (
-            <View style={styles.rowStyle}>
-              <Text style={styles.titleStyle}>
-                {item.title} - {item.id}
-              </Text>
-              <TouchableOpacity onPress={() => deleteBlogPost(item.id)}>
-                <Feather style={styles.iconStyle} name='trash' />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Show', { id: item.id })}>
+              <View style={styles.rowStyle}>
+                <Text style={styles.titleStyle}>
+                  {item.title} - {item.id}
+                </Text>
+                <Text style={styles.contentStyle}>{item.content}</Text>
+                <TouchableOpacity onPress={() => deleteBlogPost(item.id)}>
+                  <Feather style={styles.deleteIconStyle} name='trash' />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
           );
         }}
       />
@@ -38,7 +40,18 @@ const IndexScreen = () => {
   );
 };
 
-// Create Stylesheet
+// Add icon to header
+IndexScreen.navigationOptions = ({ navigation }) => {
+  return {
+    headerRight: () => (
+      <TouchableOpacity onPress={() => navigation.navigate('Create')}>
+        <Feather style={styles.createIconStyle} name='plus' />
+      </TouchableOpacity>
+    ),
+  };
+};
+
+// Create Stylesheet
 const styles = StyleSheet.create({
   rowStyle: {
     flexDirection: 'row',
@@ -51,10 +64,17 @@ const styles = StyleSheet.create({
   titleStyle: {
     fontSize: 18,
   },
-  iconStyle: {
+  contentStyle: {
+    fontSize: 14,
+  },
+  createIconStyle: {
+    fontSize: 30,
+    marginRight: 10,
+  },
+  deleteIconStyle: {
     fontSize: 24,
   },
 });
 
-// Export Component
+// Export Component
 export default IndexScreen;
