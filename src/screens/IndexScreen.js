@@ -1,5 +1,5 @@
 // Import Dependencies
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -12,7 +12,20 @@ import { Feather } from '@expo/vector-icons';
 
 // Create component
 const IndexScreen = ({ navigation }) => {
-  const { state, deleteBlogPost } = useContext(Context);
+  const { state, deleteBlogPost, getBlogPosts } = useContext(Context);
+
+  useEffect(() => {
+    getBlogPosts();
+
+    const listener = navigation.addListener('didFocus', () => {
+      getBlogPosts();
+    });
+
+    return () => {
+      // Clean up listener
+      listener.remove();
+    };
+  }, []);
 
   return (
     <View>
